@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Logic Quiz · Laws of Logic</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(145deg, #f7f9fc 0%, #e9eef3 100%);
+            font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .slide-container {
+            max-width: 900px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(4px);
+            border-radius: 2.5rem;
+            box-shadow: 0 25px 45px -12px rgba(0, 20, 40, 0.35), 0 2px 8px rgba(0,0,0,0.06);
+            padding: 2.5rem 2.8rem;
+            transition: all 0.25s ease;
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+
+        h1 {
+            font-size: 1.9rem;
+            font-weight: 600;
+            color: #0b2a3e;
+            letter-spacing: -0.01em;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.4rem;
+        }
+
+        .badge-level {
+            background: #1c4e6f;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.25rem 1rem;
+            border-radius: 40px;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+        }
+
+        .slide-progress {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.8rem;
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+            padding-bottom: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .counter {
+            font-weight: 500;
+            color: #2c5778;
+            background: rgba(28, 78, 111, 0.08);
+            padding: 0.2rem 1.2rem;
+            border-radius: 40px;
+            font-size: 0.9rem;
+        }
+
+        .question-box {
+            background: white;
+            border-radius: 1.8rem;
+            padding: 2rem 2.2rem;
+            box-shadow: 0 6px 18px rgba(0, 20, 30, 0.06);
+            margin-bottom: 2rem;
+            border: 1px solid #eef3f8;
+        }
+
+        .question-text {
+            font-size: 1.35rem;
+            font-weight: 500;
+            line-height: 1.5;
+            color: #0a293f;
+            margin-bottom: 1.5rem;
+        }
+
+        .math {
+            background: #f2f6fb;
+            padding: 0.75rem 1.5rem;
+            border-radius: 1.2rem;
+            font-size: 1.4rem;
+            text-align: center;
+            font-family: 'Courier New', 'CMU Serif', serif;
+            margin: 0.5rem 0 1.2rem 0;
+            color: #003153;
+            box-shadow: inset 0 1px 4px rgba(0,0,0,0.02);
+            border: 1px solid #dce6ef;
+            overflow-x: auto;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin: 1.5rem 0 0.8rem;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            background: #f8fafc;
+            padding: 0.6rem 1.2rem;
+            border-radius: 1.2rem;
+            border: 1px solid #dfe8f2;
+            transition: background 0.15s;
+            cursor: pointer;
+        }
+
+        .option-item:hover {
+            background: #edf3fa;
+        }
+
+        .option-item input[type="radio"] {
+            width: 1.1rem;
+            height: 1.1rem;
+            accent-color: #1f6390;
+            cursor: pointer;
+        }
+
+        .option-item label {
+            font-size: 1.05rem;
+            font-weight: 450;
+            color: #13334d;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .feedback {
+            margin: 1.2rem 0 0.2rem;
+            padding: 0.8rem 1.4rem;
+            border-radius: 1.2rem;
+            font-weight: 500;
+            background: #eef5fa;
+            border-left: 5px solid #2a6b96;
+            color: #0a314a;
+        }
+
+        .feedback.correct {
+            background: #dff0e0;
+            border-left-color: #1f7b4d;
+            color: #0d472b;
+        }
+
+        .feedback.wrong {
+            background: #fde8e8;
+            border-left-color: #b13e3e;
+            color: #691f1f;
+        }
+
+        .nav-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            margin-top: 1.8rem;
+        }
+
+        .btn {
+            background: white;
+            border: 1px solid #c8d6e5;
+            padding: 0.7rem 1.8rem;
+            border-radius: 3rem;
+            font-weight: 500;
+            font-size: 0.95rem;
+            color: #1a415b;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+            transition: 0.18s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: #1f6390;
+            border: 1px solid #1f6390;
+            color: white;
+            box-shadow: 0 6px 12px -6px rgba(26, 80, 120, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: #134e75;
+            transform: scale(0.97);
+        }
+
+        .btn:active {
+            transform: scale(0.94);
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            pointer-events: none;
+            filter: grayscale(0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #b8ccdf;
+        }
+
+        .btn-outline:hover {
+            background: #e7eef6;
+        }
+
+        .reset-area {
+            margin-top: 1.5rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .footer-rule {
+            font-size: 0.85rem;
+            color: #3d5e78;
+            text-align: center;
+            margin-top: 1.8rem;
+            opacity: 0.8;
+            border-top: 1px solid rgba(0,0,0,0.04);
+            padding-top: 1rem;
+            line-height: 1.6;
+        }
+
+        .footer-rule .credit {
+            display: flex;
+            justify-content: center;
+            gap: 1.8rem;
+            flex-wrap: wrap;
+            font-weight: 450;
+            margin-top: 0.2rem;
+        }
+
+        .footer-rule .credit span {
+            background: rgba(28, 78, 111, 0.06);
+            padding: 0.1rem 0.9rem;
+            border-radius: 30px;
+        }
+
+        @media (max-width: 600px) {
+            .slide-container { padding: 1.5rem; }
+            .question-box { padding: 1.2rem; }
+            .math { font-size: 1.1rem; padding: 0.5rem 0.8rem; }
+            .question-text { font-size: 1.1rem; }
+            .footer-rule .credit { gap: 0.6rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="slide-container" id="app">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+        <h1>
+            <span>📐 Logic Laws</span>
+            <span class="badge-level" id="levelBadge">Beginning</span>
+        </h1>
+    </div>
+
+    <div class="slide-progress">
+        <span class="counter" id="slideCounter">1 / 30</span>
+        <span style="display: flex; gap: 0.5rem;">
+            <span style="background: #dbe4ed; padding: 0.2rem 1rem; border-radius: 30px; font-size: 0.8rem;" id="partLabel">Part A</span>
+        </span>
+    </div>
+
+    <div class="question-box" id="questionBox">
+        <div class="question-text" id="questionText">Loading question...</div>
+        <div id="mathDisplay" class="math">—</div>
+        <div id="optionsContainer" class="options"></div>
+        <div id="feedbackArea" class="feedback" style="display: none;"></div>
+    </div>
+
+    <div class="nav-controls">
+        <button class="btn btn-outline" id="prevBtn">← Previous</button>
+        <div style="display: flex; gap: 0.8rem;">
+            <button class="btn btn-primary" id="checkBtn">✔ Check</button>
+            <button class="btn btn-outline" id="nextBtn">Next →</button>
+        </div>
+    </div>
+    <div class="reset-area">
+        <button class="btn btn-outline" id="resetBtn" style="background: #f0f4fa;">↺ Reset all</button>
+    </div>
+    <div class="footer-rule">
+        <div class="credit">
+            <span>🤖 DeepSeek Assistant</span>
+            <span>🧠 OpenAI Assistant</span>
+            <span>📖 Lecturer Revised</span>
+        </div>
+        <div style="margin-top: 0.3rem; opacity: 0.7; font-size: 0.8rem;">Interactive quiz · 30 questions · Beginning · Intermediate · Advanced</div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ---------- QUIZ DATA ----------
+        const QUIZ = [
+            // Part A: Beginning (1-10)
+            { part: 'A', level: 'Beginning', type: 'fill', question: 'จงระบุว่าข้อความต่อไปนี้ใช้กฎใด', math: 'P → Q ≡ ¬P ∨ Q', correct: 'กฎอิมพลิเคชัน', options: ['กฎอิมพลิเคชัน', 'De Morgan’s law', 'กฎปฏิเสธซ้อน', 'กฎการลดรูป'] },
+            { part: 'A', level: 'Beginning', type: 'fill', question: 'จงระบุว่าข้อความต่อไปนี้ใช้กฎใด', math: '¬(P ∧ Q) ≡ ¬P ∨ ¬Q', correct: 'De Morgan’s law', options: ['กฎอิมพลิเคชัน', 'De Morgan’s law', 'กฎปฏิเสธซ้อน', 'กฎการลดรูป'] },
+            { part: 'A', level: 'Beginning', type: 'fill', question: 'จงระบุว่าข้อความต่อไปนี้ใช้กฎใด', math: '¬¬P ≡ P', correct: 'กฎปฏิเสธซ้อน', options: ['กฎอิมพลิเคชัน', 'De Morgan’s law', 'กฎปฏิเสธซ้อน', 'กฎการลดรูป'] },
+            { part: 'A', level: 'Beginning', type: 'fill', question: 'จงแปลงข้อความต่อไปนี้ให้อยู่ในรูปของ ∨', math: 'P → Q', correct: '¬P ∨ Q', options: ['¬P ∨ Q', 'P ∨ ¬Q', '¬P ∧ Q', 'P ∧ ¬Q'] },
+            { part: 'A', level: 'Beginning', type: 'fill', question: 'จงแปลงข้อความต่อไปนี้ (De Morgan)', math: '¬(P ∧ Q)', correct: '¬P ∨ ¬Q', options: ['¬P ∨ ¬Q', '¬P ∧ ¬Q', 'P ∨ Q', '¬P ∨ Q'] },
+            { part: 'A', level: 'Beginning', type: 'fill', question: 'จงแปลงข้อความต่อไปนี้ (De Morgan)', math: '¬(P ∨ Q)', correct: '¬P ∧ ¬Q', options: ['¬P ∧ ¬Q', '¬P ∨ ¬Q', 'P ∧ Q', '¬P ∨ Q'] },
+            { part: 'A', level: 'Beginning', type: 'fill', question: 'จาก P ∧ Q สามารถสรุปอะไรได้โดยใช้กฎการลดรูป?', math: 'P ∧ Q', correct: 'P', options: ['P', 'Q', 'P ∨ Q', '¬P'] },
+            { part: 'A', level: 'Beginning', type: 'tf', question: 'ข้อความต่อไปนี้ถูกต้องหรือไม่: P ∧ Q ⇒ P', math: 'P ∧ Q ⇒ P', correct: 'True', options: ['True', 'False'] },
+            { part: 'A', level: 'Beginning', type: 'tf', question: 'ข้อความต่อไปนี้ถูกต้องหรือไม่: P ∧ Q ≡ P', math: 'P ∧ Q ≡ P', correct: 'False', options: ['True', 'False'] },
+            { part: 'A', level: 'Beginning', type: 'fill', question: 'เติมคำในช่องว่าง: ¬¬Q ≡ _____', math: '¬¬Q ≡', correct: 'Q', options: ['Q', '¬Q', 'True', 'False'] },
+
+            // Part B: Intermediate (11-20)
+            { part: 'B', level: 'Intermediate', type: 'fill', question: 'พิสูจน์ว่า ¬(P ∧ Q) ≡ ¬P ∨ ¬Q (ระบุชื่อกฎ)', math: '¬(P ∧ Q) ≡ ¬P ∨ ¬Q', correct: 'De Morgan’s law', options: ['De Morgan’s law', 'กฎอิมพลิเคชัน', 'กฎปฏิเสธซ้อน', 'กฎการลดรูป'] },
+            { part: 'B', level: 'Intermediate', type: 'fill', question: 'พิสูจน์ว่า ¬(P ∨ Q) ≡ ¬P ∧ ¬Q (ระบุชื่อกฎ)', math: '¬(P ∨ Q) ≡ ¬P ∧ ¬Q', correct: 'De Morgan’s law', options: ['De Morgan’s law', 'กฎอิมพลิเคชัน', 'กฎปฏิเสธซ้อน', 'กฎการลดรูป'] },
+            { part: 'B', level: 'Intermediate', type: 'fill', question: 'แปลงและลดรูป ¬¬(P → Q)', math: '¬¬(P → Q)', correct: '¬P ∨ Q', options: ['¬P ∨ Q', 'P → Q', 'P ∨ ¬Q', '¬P ∧ Q'] },
+            { part: 'B', level: 'Intermediate', type: 'fill', question: 'แปลง (P ∧ Q) → R โดยใช้กฎอิมพลิเคชัน', math: '(P ∧ Q) → R', correct: '¬(P ∧ Q) ∨ R', options: ['¬(P ∧ Q) ∨ R', '¬P ∨ ¬Q ∨ R', '¬(P ∨ Q) ∨ R', 'P ∧ Q ∧ R'] },
+            { part: 'B', level: 'Intermediate', type: 'fill', question: 'แปลง ¬(P → Q) ให้ไม่มี →', math: '¬(P → Q)', correct: 'P ∧ ¬Q', options: ['P ∧ ¬Q', '¬P ∧ Q', '¬P ∨ Q', 'P ∨ ¬Q'] },
+            { part: 'B', level: 'Intermediate', type: 'fill', question: 'จาก (P → Q) ∧ R เป็นจริง สรุปได้อะไรโดยใช้กฎลดรูป', math: '(P → Q) ∧ R', correct: 'P → Q', options: ['P → Q', 'R', 'P', 'Q'] },
+            { part: 'B', level: 'Intermediate', type: 'fill', question: 'อธิบายความแตกต่างระหว่าง P ∧ Q ⇒ P และ P ∧ Q ≡ P', math: 'P ∧ Q ⇒ P  vs  ≡', correct: 'Implication vs Equivalence', options: ['Implication vs Equivalence', 'เหมือนกัน', 'ทั้งคู่ผิด', 'ทั้งคู่ถูก'] },
+            { part: 'B', level: 'Intermediate', type: 'tf', question: 'สร้าง truth table ตรวจ P ∧ Q ⇒ P ถูกต้องหรือไม่?', math: 'P ∧ Q ⇒ P', correct: 'True', options: ['True', 'False'] },
+            { part: 'B', level: 'Intermediate', type: 'fill', question: 'เติมเหตุผล: ¬(P ∧ Q) ≡ ¬P ∨ ¬Q ใช้กฎใด?', math: '¬(P ∧ Q) ≡ ¬P ∨ ¬Q', correct: 'De Morgan’s law', options: ['De Morgan’s law', 'กฎอิมพลิเคชัน', 'กฎปฏิเสธซ้อน', 'กฎการลดรูป'] },
+            { part: 'B', level: 'Intermediate', type: 'fill', question: 'เติมเหตุผล: ¬¬(P ∨ Q) ≡ P ∨ Q ใช้กฎใด?', math: '¬¬(P ∨ Q) ≡ P ∨ Q', correct: 'กฎปฏิเสธซ้อน', options: ['กฎปฏิเสธซ้อน', 'De Morgan’s law', 'กฎอิมพลิเคชัน', 'กฎการลดรูป'] },
+
+            // Part C: Advanced (21-30)
+            { part: 'C', level: 'Advanced', type: 'fill', question: 'พิสูจน์ ¬(P → Q) ≡ P ∧ ¬Q (ใช้ Implication + De Morgan)', math: '¬(P → Q) ≡ P ∧ ¬Q', correct: 'P ∧ ¬Q', options: ['P ∧ ¬Q', '¬P ∧ Q', '¬P ∨ Q', 'P ∨ ¬Q'] },
+            { part: 'C', level: 'Advanced', type: 'fill', question: 'พิสูจน์ ¬(¬P ∨ Q) ≡ P ∧ ¬Q', math: '¬(¬P ∨ Q) ≡ P ∧ ¬Q', correct: 'P ∧ ¬Q', options: ['P ∧ ¬Q', '¬P ∧ Q', '¬P ∨ Q', 'P ∨ ¬Q'] },
+            { part: 'C', level: 'Advanced', type: 'fill', question: 'พิสูจน์ ¬(P → ¬Q) ≡ P ∧ Q', math: '¬(P → ¬Q) ≡ P ∧ Q', correct: 'P ∧ Q', options: ['P ∧ Q', 'P ∧ ¬Q', '¬P ∧ Q', '¬P ∧ ¬Q'] },
+            { part: 'C', level: 'Advanced', type: 'fill', question: 'พิสูจน์ (P ∧ Q) ∧ R ⇒ P โดยใช้กฎการลดรูป', math: '(P ∧ Q) ∧ R ⇒ P', correct: 'P', options: ['P', 'Q', 'R', 'P ∧ Q'] },
+            { part: 'C', level: 'Advanced', type: 'fill', question: 'พิสูจน์ P ∧ (Q ∧ R) ⇒ Q', math: 'P ∧ (Q ∧ R) ⇒ Q', correct: 'Q', options: ['Q', 'P', 'R', 'Q ∧ R'] },
+            { part: 'C', level: 'Advanced', type: 'fill', question: 'พิสูจน์ ¬((P ∧ Q) ∨ R) ≡ (¬P ∨ ¬Q) ∧ ¬R', math: '¬((P ∧ Q) ∨ R)', correct: '(¬P ∨ ¬Q) ∧ ¬R', options: ['(¬P ∨ ¬Q) ∧ ¬R', '(¬P ∧ ¬Q) ∨ ¬R', '¬P ∨ ¬Q ∨ ¬R', '¬(P∨Q) ∧ ¬R'] },
+            { part: 'C', level: 'Advanced', type: 'fill', question: 'พิสูจน์ ¬((P ∨ Q) ∧ R) ≡ (¬P ∧ ¬Q) ∨ ¬R', math: '¬((P ∨ Q) ∧ R)', correct: '(¬P ∧ ¬Q) ∨ ¬R', options: ['(¬P ∧ ¬Q) ∨ ¬R', '(¬P ∨ ¬Q) ∧ ¬R', '¬P ∧ ¬Q ∧ ¬R', '¬(P∨Q) ∨ ¬R'] },
+            { part: 'C', level: 'Advanced', type: 'tf', question: 'พิสูจน์ (P ∧ Q) → P เป็น tautology โดย truth table', math: '(P ∧ Q) → P', correct: 'True', options: ['True', 'False'] },
+            { part: 'C', level: 'Advanced', type: 'fill', question: 'นักศึกษาสรุป P ∧ Q ≡ P ผิดพลาดเพราะอะไร?', math: 'P ∧ Q ≡ P', correct: 'สับสน Implication กับ Equivalence', options: ['สับสน Implication กับ Equivalence', 'ถูกต้องแล้ว', 'ใช้กฎผิด', 'ไม่มีข้อผิดพลาด'] },
+            { part: 'C', level: 'Advanced', type: 'fill', question: 'P: ส่งงาน, Q: ได้คะแนน; อธิบาย P ∧ Q ⇒ P', math: 'P ∧ Q ⇒ P', correct: 'ถ้าส่งงานและได้คะแนน → ส่งงาน', options: ['ถ้าส่งงานและได้คะแนน → ส่งงาน', 'ถ้าได้คะแนน → ส่งงาน', 'ถ้าส่งงาน → ได้คะแนน', 'ทั้งคู่สมมูลกัน'] }
+        ];
+
+        // ---------- STATE ----------
+        let currentIndex = 0;
+        let answers = new Array(QUIZ.length).fill(null); // store selected index (or null)
+        let revealed = new Array(QUIZ.length).fill(false);
+
+        const questionText = document.getElementById('questionText');
+        const mathDisplay = document.getElementById('mathDisplay');
+        const optionsContainer = document.getElementById('optionsContainer');
+        const feedbackArea = document.getElementById('feedbackArea');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const checkBtn = document.getElementById('checkBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const slideCounter = document.getElementById('slideCounter');
+        const levelBadge = document.getElementById('levelBadge');
+        const partLabel = document.getElementById('partLabel');
+
+        // ---------- RENDER ----------
+        function render() {
+            const q = QUIZ[currentIndex];
+            if (!q) return;
+
+            // update header
+            const partNames = { 'A': 'Part A · Beginning', 'B': 'Part B · Intermediate', 'C': 'Part C · Advanced' };
+            partLabel.textContent = partNames[q.part] || '';
+            levelBadge.textContent = q.level;
+            slideCounter.textContent = `${currentIndex+1} / ${QUIZ.length}`;
+
+            // question & math
+            questionText.textContent = q.question;
+            mathDisplay.textContent = q.math;
+
+            // options
+            optionsContainer.innerHTML = '';
+            const selectedIdx = answers[currentIndex];
+            q.options.forEach((opt, idx) => {
+                const div = document.createElement('div');
+                div.className = 'option-item';
+
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = 'quiz-option';
+                radio.value = idx;
+                if (selectedIdx === idx) radio.checked = true;
+
+                const label = document.createElement('label');
+                label.textContent = opt;
+
+                div.appendChild(radio);
+                div.appendChild(label);
+                optionsContainer.appendChild(div);
+
+                radio.addEventListener('change', function() {
+                    if (this.checked) {
+                        answers[currentIndex] = idx;
+                        // clear feedback when new selection
+                        feedbackArea.style.display = 'none';
+                        feedbackArea.className = 'feedback';
+                    }
+                });
+            });
+
+            // feedback
+            if (revealed[currentIndex]) {
+                const sel = answers[currentIndex];
+                const isCorrect = (sel !== null && q.options[sel] === q.correct);
+                feedbackArea.style.display = 'block';
+                feedbackArea.className = 'feedback ' + (isCorrect ? 'correct' : 'wrong');
+                if (sel === null) {
+                    feedbackArea.textContent = '⚠️ กรุณาเลือกคำตอบ';
+                    feedbackArea.className = 'feedback';
+                } else {
+                    const correctAns = q.correct;
+                    feedbackArea.textContent = isCorrect 
+                        ? `✅ ถูกต้อง! (${correctAns})` 
+                        : `❌ ไม่ถูกต้อง คำตอบที่ถูกต้องคือ: ${correctAns}`;
+                }
+            } else {
+                feedbackArea.style.display = 'none';
+                feedbackArea.className = 'feedback';
+            }
+
+            // update check button
+            checkBtn.disabled = false;
+            // nav buttons
+            prevBtn.disabled = (currentIndex === 0);
+            nextBtn.disabled = (currentIndex === QUIZ.length - 1);
+        }
+
+        // ---------- ACTIONS ----------
+        function checkAnswer() {
+            if (revealed[currentIndex]) {
+                // already revealed, maybe just show again
+                render();
+                return;
+            }
+            const sel = answers[currentIndex];
+            if (sel === null || sel === undefined) {
+                feedbackArea.style.display = 'block';
+                feedbackArea.className = 'feedback';
+                feedbackArea.textContent = '⚠️ กรุณาเลือกคำตอบก่อน';
+                return;
+            }
+            revealed[currentIndex] = true;
+            render();
+        }
+
+        function goTo(index) {
+            if (index < 0 || index >= QUIZ.length) return;
+            currentIndex = index;
+            render();
+        }
+
+        function next() {
+            if (currentIndex < QUIZ.length - 1) goTo(currentIndex + 1);
+        }
+
+        function prev() {
+            if (currentIndex > 0) goTo(currentIndex - 1);
+        }
+
+        function resetAll() {
+            answers = new Array(QUIZ.length).fill(null);
+            revealed = new Array(QUIZ.length).fill(false);
+            currentIndex = 0;
+            render();
+        }
+
+        // ---------- EVENT BINDING ----------
+        checkBtn.addEventListener('click', checkAnswer);
+        nextBtn.addEventListener('click', next);
+        prevBtn.addEventListener('click', prev);
+        resetBtn.addEventListener('click', resetAll);
+
+        // keyboard support
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') next();
+            else if (e.key === 'ArrowLeft') prev();
+            else if (e.key === 'Enter') checkAnswer();
+        });
+
+        // initial render
+        render();
+    })();
+</script>
+
+</body>
+</html>
